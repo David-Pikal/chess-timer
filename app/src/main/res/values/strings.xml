@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ChessTimer</string>
+    <string name="enter_time_in_minutes">Tož kolik?</string>
+    <string name="reset">Reset</string>
+    <string name="start">Start</string>
+    <string name="_0">0</string>
+</resources>

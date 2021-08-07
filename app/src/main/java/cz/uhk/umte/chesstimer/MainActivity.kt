@@ -3,25 +3,38 @@ package cz.uhk.umte.chesstimer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
     var START_MILLI_SECONDS = 60000L
 
     lateinit var countdown_timer: CountDownTimer
-    var isRunning: Boolean = false;
+    var isRunning: Boolean = false
     var time_in_milli_seconds = 0L
+
+    lateinit var button: Button
+    lateinit var reset: Button
+
+    lateinit var timer: TextView
+    lateinit var timeEditTest: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        button = findViewById(R.id.button)
+        reset = findViewById(R.id.reset)
+        timer = findViewById(R.id.timer)
+        timeEditTest = findViewById(R.id.time_edit_text)
 
         button.setOnClickListener {
             if (isRunning) {
                 pauseTimer()
             } else {
-                val time  = time_edit_text.text.toString()
+                val time  = timeEditTest.text.toString()
                 time_in_milli_seconds = time.toLong() *60000L
                 startTimer(time_in_milli_seconds)
             }

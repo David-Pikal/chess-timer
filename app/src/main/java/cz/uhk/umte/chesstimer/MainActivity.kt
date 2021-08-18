@@ -1,42 +1,43 @@
 package cz.uhk.umte.chesstimer
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    var START_MILLI_SECONDS = 60000L
+    private var START_MILLI_SECONDS = 60000L
 
-    lateinit var countdown_timer: CountDownTimer
-    var isRunning: Boolean = false
-    var time_in_milli_seconds = 0L
+    private lateinit var countdownTimer: CountDownTimer
+    private lateinit var blackCounter: CountDownTimer
+    private var isRunning: Boolean = false
+    private var timeInMilliSeconds = 0L
 
-    lateinit var button: Button
-    lateinit var reset: Button
+    private lateinit var button: Button
+    private lateinit var reset: Button
 
-    lateinit var timer: TextView
-    lateinit var timeEditTest: EditText
+    private lateinit var timer: TextView
+    private lateinit var timeEditTest: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         button = findViewById(R.id.button)
         reset = findViewById(R.id.reset)
-        timer = findViewById(R.id.timer)
-        timeEditTest = findViewById(R.id.time_edit_text)
+        timer = findViewById(R.id.timer_w)
+        timeEditTest = findViewById(R.id.time_edit_w)
 
         button.setOnClickListener {
             if (isRunning) {
                 pauseTimer()
             } else {
                 val time  = timeEditTest.text.toString()
-                time_in_milli_seconds = time.toLong() *60000L
-                startTimer(time_in_milli_seconds)
+                timeInMilliSeconds = time.toLong() *60000L
+                startTimer(timeInMilliSeconds)
             }
         }
 
@@ -49,41 +50,53 @@ class MainActivity : AppCompatActivity() {
 
     private fun pauseTimer() {
 
-        button.text = "Start"
-        countdown_timer.cancel()
+        button.text = getString(R.string.start)
+        countdownTimer.cancel()
         isRunning = false
         reset.visibility = View.VISIBLE
     }
 
     private fun startTimer(time_in_seconds: Long) {
-        countdown_timer = object : CountDownTimer(time_in_seconds, 1000) {
+        countdownTimer = object : CountDownTimer(time_in_seconds, 1000) {
             override fun onFinish() {
                 // todo
             }
 
             override fun onTick(p0: Long) {
-                time_in_milli_seconds = p0
+                timeInMilliSeconds = p0
                 updateTextUI()
             }
         }
-        countdown_timer.start()
+        countdownTimer.start()
 
         isRunning = true
-        button.text = "Pause"
+        button.text = getString(R.string.pause)
         reset.visibility = View.INVISIBLE
+
+        // TODO
+        blackCounter = object : CountDownTimer(time_in_seconds, 1000) {
+            override fun onTick(p0: Long) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFinish() {
+                TODO("Not yet implemented")
+            }
+
+        }
 
     }
 
     private fun resetTimer() {
-        time_in_milli_seconds = START_MILLI_SECONDS
+        timeInMilliSeconds = START_MILLI_SECONDS
         updateTextUI()
         reset.visibility = View.INVISIBLE
     }
 
     private fun updateTextUI() {
-        val minute = (time_in_milli_seconds / 1000) / 60
-        val seconds = (time_in_milli_seconds / 1000) % 60
+        val minute = (timeInMilliSeconds / 1000) / 60
+        val seconds = (timeInMilliSeconds / 1000) % 60
 
-        timer.text = "$minute:$seconds"
+        timer.text = "${minute}:${seconds}"
     }
 }

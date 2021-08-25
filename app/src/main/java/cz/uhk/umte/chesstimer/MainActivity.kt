@@ -10,34 +10,60 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private var START_MILLI_SECONDS = 60000L
+    private var blackPlay: Boolean = false
+    private var whitePlay: Boolean = false
+    private val START_MILLI_SECONDS = 60000L
 
-    private lateinit var countdownTimer: CountDownTimer
+    private lateinit var whiteCounter: CountDownTimer
     private lateinit var blackCounter: CountDownTimer
     private var isRunning: Boolean = false
-    private var timeInMilliSeconds = 0L
+    // time of white player
+    private var timeInMilliSecondsWhite = 0L
+    // remaining time of black player
+    private var timeInMilliSecondsBlack = 0L
 
+    // start button
     private lateinit var button: Button
+    // reset button
     private lateinit var reset: Button
+    // pause button
+    private lateinit var btnPause: Button
+    private lateinit var btnBlack: Button
+    private lateinit var btnWhite: Button
 
-    private lateinit var timer: TextView
-    private lateinit var timeEditTest: EditText
+    private lateinit var timerWhite: TextView
+    private lateinit var timerBlack: TextView
+    private lateinit var timeEditWhite: EditText
+    private lateinit var timeEditBlack: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // binding with view components
         button = findViewById(R.id.button)
         reset = findViewById(R.id.reset)
-        timer = findViewById(R.id.timer_w)
-        timeEditTest = findViewById(R.id.time_edit_w)
+        btnPause = findViewById(R.id.btn_pause)
+        btnWhite = findViewById(R.id.btn_w)
+        btnBlack = findViewById(R.id.btn_b)
 
+        timerWhite = findViewById(R.id.timer_w)
+        timerBlack = findViewById(R.id.timer_b)
+
+        timeEditWhite = findViewById(R.id.time_edit_w)
+        timeEditBlack = findViewById(R.id.time_edit_b)
+
+        // start button
         button.setOnClickListener {
             if (isRunning) {
                 pauseTimer()
             } else {
-                val time  = timeEditTest.text.toString()
-                timeInMilliSeconds = time.toLong() *60000L
-                startTimer(timeInMilliSeconds)
+                // time white
+                val time  = timeEditWhite.text.toString()
+                timeInMilliSecondsWhite = time.toLong() *60000L
+                // start white timer
+                startWhite(timeInMilliSecondsWhite)
+                //startTimer(timeInMilliSeconds)
             }
         }
 
@@ -48,55 +74,71 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun startWhite(timeInMilliSeconds: Long) {
+        whiteCounter = object : CountDownTimer(timeInMilliSeconds, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                timeInMilliSecondsWhite = millisUntilFinished
+                updateWhiteTimer()
+            }
+
+            override fun onFinish() {
+                //TODO("Not yet implemented")
+            }
+        }
+
+        whiteCounter.start()
+        whitePlay = true
+        btnBlack.visibility = View.INVISIBLE
+        btnWhite.visibility = View.VISIBLE
+    }
+
+    private fun startBlack(timeInMilliSeconds: Long) {
+        blackCounter = object : CountDownTimer(timeInMilliSeconds, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                timeInMilliSecondsBlack = millisUntilFinished
+                updateBlackTimer()
+                //TODO("Not yet implemented")
+            }
+
+            override fun onFinish() {
+                //TODO("Not yet implemented")
+            }
+
+        }
+
+        blackCounter.start()
+        blackPlay = true
+        whitePlay = false
+    }
+
+    private fun updateBlackTimer() {
+        TODO("Not yet implemented")
+        val minute = (timeInMilliSecondsWhite / 1000) / 60
+        val seconds = (timeInMilliSecondsWhite / 1000) % 60
+
+        timerBlack.text = "${minute}:${seconds}"
+    }
+
+    private fun updateWhiteTimer() {
+        TODO("Not yet implemented")
+        val minute = (timeInMilliSecondsWhite / 1000) / 60
+        val seconds = (timeInMilliSecondsWhite / 1000) % 60
+
+        timerWhite.text = "${minute}:${seconds}"
+    }
+
     private fun pauseTimer() {
 
         button.text = getString(R.string.start)
-        countdownTimer.cancel()
+        whiteCounter.cancel()
         isRunning = false
         reset.visibility = View.VISIBLE
     }
 
-    private fun startTimer(time_in_seconds: Long) {
-        countdownTimer = object : CountDownTimer(time_in_seconds, 1000) {
-            override fun onFinish() {
-                // todo
-            }
-
-            override fun onTick(p0: Long) {
-                timeInMilliSeconds = p0
-                updateTextUI()
-            }
-        }
-        countdownTimer.start()
-
-        isRunning = true
-        button.text = getString(R.string.pause)
-        reset.visibility = View.INVISIBLE
-
-        // TODO
-        blackCounter = object : CountDownTimer(time_in_seconds, 1000) {
-            override fun onTick(p0: Long) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onFinish() {
-                TODO("Not yet implemented")
-            }
-
-        }
-
-    }
-
     private fun resetTimer() {
-        timeInMilliSeconds = START_MILLI_SECONDS
-        updateTextUI()
+        timeInMilliSecondsWhite = START_MILLI_SECONDS
+        timeInMilliSecondsBlack = START_MILLI_SECONDS
+        //todo updateTextUI()
         reset.visibility = View.INVISIBLE
-    }
-
-    private fun updateTextUI() {
-        val minute = (timeInMilliSeconds / 1000) / 60
-        val seconds = (timeInMilliSeconds / 1000) % 60
-
-        timer.text = "${minute}:${seconds}"
     }
 }

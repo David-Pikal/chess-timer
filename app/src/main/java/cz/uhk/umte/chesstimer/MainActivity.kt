@@ -53,24 +53,43 @@ class MainActivity : AppCompatActivity() {
         timeEditWhite = findViewById(R.id.time_edit_w)
         timeEditBlack = findViewById(R.id.time_edit_b)
 
+        // TODO - maybe set in View
+        btnBlack.visibility = View.INVISIBLE
+        btnWhite.visibility = View.INVISIBLE
         // start button
         button.setOnClickListener {
             if (isRunning) {
                 pauseTimer()
             } else {
+                // TODO - validation of inserted times
                 // time white
-                val time  = timeEditWhite.text.toString()
-                timeInMilliSecondsWhite = time.toLong() *60000L
+                val timeWhite  = timeEditWhite.text.toString()
+                timeInMilliSecondsWhite = timeWhite.toLong() *60000L
+                // time black
+                val timeBlack  = timeEditBlack.text.toString()
+                timeInMilliSecondsBlack = timeBlack.toLong() *60000L
                 // start white timer
                 startWhite(timeInMilliSecondsWhite)
-                //startTimer(timeInMilliSeconds)
+                // todo set values in view - for black is still 0
             }
+        }
+
+        btnPause.setOnClickListener {
+            pauseTimer()
         }
 
         reset.setOnClickListener {
             resetTimer()
         }
 
+        // todo - disable buttons onCreate
+        btnWhite.setOnClickListener{
+            startBlack(timeInMilliSecondsBlack)
+        }
+
+        btnBlack.setOnClickListener {
+            startWhite(timeInMilliSecondsWhite)
+        }
 
     }
 
@@ -85,9 +104,15 @@ class MainActivity : AppCompatActivity() {
                 //TODO("Not yet implemented")
             }
         }
+        // todo - cancle black timer
+        if(blackPlay) {
+            blackCounter.cancel()
+            blackPlay = false
+        }
 
         whiteCounter.start()
         whitePlay = true
+        blackPlay = false
         btnBlack.visibility = View.INVISIBLE
         btnWhite.visibility = View.VISIBLE
     }
@@ -105,22 +130,26 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+        // todo - cancle white timer
+        whiteCounter.cancel()
 
         blackCounter.start()
         blackPlay = true
         whitePlay = false
+        btnBlack.visibility = View.VISIBLE
+        btnWhite.visibility = View.INVISIBLE
     }
 
     private fun updateBlackTimer() {
-        TODO("Not yet implemented")
-        val minute = (timeInMilliSecondsWhite / 1000) / 60
-        val seconds = (timeInMilliSecondsWhite / 1000) % 60
+        // TODO("Not yet implemented")
+        val minute = (timeInMilliSecondsBlack / 1000) / 60
+        val seconds = (timeInMilliSecondsBlack / 1000) % 60
 
         timerBlack.text = "${minute}:${seconds}"
     }
 
     private fun updateWhiteTimer() {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
         val minute = (timeInMilliSecondsWhite / 1000) / 60
         val seconds = (timeInMilliSecondsWhite / 1000) % 60
 
@@ -131,6 +160,7 @@ class MainActivity : AppCompatActivity() {
 
         button.text = getString(R.string.start)
         whiteCounter.cancel()
+        blackCounter.cancel()
         isRunning = false
         reset.visibility = View.VISIBLE
     }

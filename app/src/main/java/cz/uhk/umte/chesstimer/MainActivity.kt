@@ -6,26 +6,27 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
     private var blackPlay: Boolean = false
     private var whitePlay: Boolean = false
-    private val START_MILLI_SECONDS = 60000L
 
     private lateinit var whiteCounter: CountDownTimer
     private lateinit var blackCounter: CountDownTimer
     private var isRunning: Boolean = false
+
     // time of white player
     private var timeInMilliSecondsWhite = 0L
+
     // remaining time of black player
     private var timeInMilliSecondsBlack = 0L
 
     // start button
-    private lateinit var button: Button
-    // reset button
-    private lateinit var reset: Button
+    private lateinit var btnStart: Button
+
     // pause button
     private lateinit var btnPause: Button
     private lateinit var btnBlack: Button
@@ -41,8 +42,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // binding with view components
-        button = findViewById(R.id.button)
-        reset = findViewById(R.id.reset)
+        btnStart = findViewById(R.id.button)
         btnPause = findViewById(R.id.btn_pause)
         btnWhite = findViewById(R.id.btn_w)
         btnBlack = findViewById(R.id.btn_b)
@@ -57,33 +57,38 @@ class MainActivity : AppCompatActivity() {
         btnBlack.visibility = View.INVISIBLE
         btnWhite.visibility = View.INVISIBLE
         // start button
-        button.setOnClickListener {
+        btnStart.setOnClickListener {
+            /*
             if (isRunning) {
                 pauseTimer()
             } else {
-                // TODO - validation of inserted times
+
+             */
+            // TODO - validation of inserted times
+            if (timeEditBlack.text.isNotEmpty() && timeEditWhite.text.isNotEmpty()) {
                 // time white
-                val timeWhite  = timeEditWhite.text.toString()
-                timeInMilliSecondsWhite = timeWhite.toLong() *60000L
+                val timeWhite = timeEditWhite.text.toString()
+                timeInMilliSecondsWhite = timeWhite.toLong() * 60000L
                 // time black
-                val timeBlack  = timeEditBlack.text.toString()
-                timeInMilliSecondsBlack = timeBlack.toLong() *60000L
+                val timeBlack = timeEditBlack.text.toString()
+                timeInMilliSecondsBlack = timeBlack.toLong() * 60000L
                 // start white timer
                 startWhite(timeInMilliSecondsWhite)
-                // todo set values in view - for black is still 0
+                updateBlackTimer()
+                btnStart.visibility = View.INVISIBLE
+                btnPause.visibility = View.VISIBLE
+            } else {
+                Toast.makeText(this@MainActivity, "Enter time!!!", Toast.LENGTH_SHORT).show()
             }
+
         }
 
         btnPause.setOnClickListener {
             pauseTimer()
         }
 
-        reset.setOnClickListener {
-            resetTimer()
-        }
-
         // todo - disable buttons onCreate
-        btnWhite.setOnClickListener{
+        btnWhite.setOnClickListener {
             startBlack(timeInMilliSecondsBlack)
         }
 
@@ -101,13 +106,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                //TODO("Not yet implemented")
+                Toast.makeText(this@MainActivity, "Looser!!!", Toast.LENGTH_SHORT).show()
+                blackCounter.cancel()
+                updateWhiteTimer()
             }
         }
-        // todo - cancle black timer
-        if(blackPlay) {
+
+        if (blackPlay) {
             blackCounter.cancel()
-            blackPlay = false
         }
 
         whiteCounter.start()
@@ -122,17 +128,17 @@ class MainActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 timeInMilliSecondsBlack = millisUntilFinished
                 updateBlackTimer()
-                //TODO("Not yet implemented")
             }
 
             override fun onFinish() {
-                //TODO("Not yet implemented")
+                Toast.makeText(this@MainActivity, "Looser!!!", Toast.LENGTH_SHORT).show()
+                whiteCounter.cancel()
+                updateBlackTimer()
             }
 
         }
-        // todo - cancle white timer
-        whiteCounter.cancel()
 
+        whiteCounter.cancel()
         blackCounter.start()
         blackPlay = true
         whitePlay = false
@@ -141,34 +147,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateBlackTimer() {
-        // TODO("Not yet implemented")
         val minute = (timeInMilliSecondsBlack / 1000) / 60
         val seconds = (timeInMilliSecondsBlack / 1000) % 60
-
-        timerBlack.text = "${minute}:${seconds}"
+        if (seconds < 10) {
+            timerBlack.text = "$minute:0$seconds"
+        } else {
+            timerBlack.text = "$minute:$seconds"
+        }
     }
 
     private fun updateWhiteTimer() {
-        //TODO("Not yet implemented")
         val minute = (timeInMilliSecondsWhite / 1000) / 60
+        // todo show 00 if seconds = 0
+        // todo show milliseconds
         val seconds = (timeInMilliSecondsWhite / 1000) % 60
-
-        timerWhite.text = "${minute}:${seconds}"
+        if (seconds < 10) {
+            timerWhite.text = "$minute:0$seconds"
+        } else {
+            timerWhite.text = "$minute:$seconds"
+        }
     }
 
+    // TODO correctly implement this method
     private fun pauseTimer() {
-
-        button.text = getString(R.string.start)
         whiteCounter.cancel()
-        blackCounter.cancel()
+        if (this::blackCounter.isInitialized) blackCounter.cancel()
+
         isRunning = false
-        reset.visibility = View.VISIBLE
+        btnStart.visibility = View.VISIBLE
+        btnPause.visibility = View.INVISIBLE
     }
 
-    private fun resetTimer() {
-        timeInMilliSecondsWhite = START_MILLI_SECONDS
-        timeInMilliSecondsBlack = START_MILLI_SECONDS
-        //todo updateTextUI()
-        reset.visibility = View.INVISIBLE
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 }

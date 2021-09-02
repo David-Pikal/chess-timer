@@ -14,8 +14,8 @@ class MainActivity : AppCompatActivity() {
     private var blackPlay: Boolean = false
     private var whitePlay: Boolean = false
 
-    private lateinit var whiteCounter: CountDownTimer
-    private lateinit var blackCounter: CountDownTimer
+    private var whiteCounter: CountDownTimer? = null
+    private var blackCounter: CountDownTimer? = null
     private var isRunning: Boolean = false
 
     // time of white player
@@ -53,9 +53,11 @@ class MainActivity : AppCompatActivity() {
         timeEditWhite = findViewById(R.id.time_edit_w)
         timeEditBlack = findViewById(R.id.time_edit_b)
 
+        /*
         // TODO - maybe set in View
         btnBlack.visibility = View.INVISIBLE
         btnWhite.visibility = View.INVISIBLE
+         */
         // start button
         btnStart.setOnClickListener {
             /*
@@ -107,16 +109,16 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 Toast.makeText(this@MainActivity, "Looser!!!", Toast.LENGTH_SHORT).show()
-                blackCounter.cancel()
+                blackCounter?.cancel()
                 updateWhiteTimer()
             }
         }
 
         if (blackPlay) {
-            blackCounter.cancel()
+            blackCounter?.cancel()
         }
 
-        whiteCounter.start()
+        (whiteCounter as CountDownTimer).start()
         whitePlay = true
         blackPlay = false
         btnBlack.visibility = View.INVISIBLE
@@ -132,14 +134,14 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 Toast.makeText(this@MainActivity, "Looser!!!", Toast.LENGTH_SHORT).show()
-                whiteCounter.cancel()
+                whiteCounter?.cancel()
                 updateBlackTimer()
             }
 
         }
 
-        whiteCounter.cancel()
-        blackCounter.start()
+        whiteCounter?.cancel()
+        (blackCounter as CountDownTimer).start()
         blackPlay = true
         whitePlay = false
         btnBlack.visibility = View.VISIBLE
@@ -169,20 +171,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO correctly implement this method
+    // + add continue
     private fun pauseTimer() {
-        whiteCounter.cancel()
-        if (this::blackCounter.isInitialized) blackCounter.cancel()
+        whiteCounter?.cancel()
+        blackCounter?.cancel()
 
         isRunning = false
         btnStart.visibility = View.VISIBLE
         btnPause.visibility = View.INVISIBLE
+        btnBlack.visibility = View.INVISIBLE
+        btnWhite.visibility = View.INVISIBLE
     }
 
     override fun onPause() {
         super.onPause()
+        whiteCounter?.cancel()
+
     }
 
     override fun onResume() {
         super.onResume()
+        updateWhiteTimer()
+        updateBlackTimer()
     }
 }

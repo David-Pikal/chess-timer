@@ -6,4 +6,7 @@
     <string name="pause">Pause</string>
     <string name="start">Start</string>
     <string name="move">Move</string>
+    <string name="show_time">%1$d:%2$d</string>
+    <string name="show_time0">%1$d:0%2$d</string>
+    <string name="go_on">Continue</string>
 </resources>

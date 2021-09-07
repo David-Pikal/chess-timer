@@ -32,8 +32,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnBlack: Button
     private lateinit var btnWhite: Button
 
+    // show times of players
     private lateinit var timerWhite: TextView
     private lateinit var timerBlack: TextView
+
+    // edit times
     private lateinit var timeEditWhite: EditText
     private lateinit var timeEditBlack: EditText
 
@@ -53,11 +56,6 @@ class MainActivity : AppCompatActivity() {
         timeEditWhite = findViewById(R.id.time_edit_w)
         timeEditBlack = findViewById(R.id.time_edit_b)
 
-        /*
-        // TODO - maybe set in View
-        btnBlack.visibility = View.INVISIBLE
-        btnWhite.visibility = View.INVISIBLE
-         */
         // start button
         btnStart.setOnClickListener {
             /*
@@ -66,7 +64,6 @@ class MainActivity : AppCompatActivity() {
             } else {
 
              */
-            // TODO - validation of inserted times
             if (timeEditBlack.text.isNotEmpty() && timeEditWhite.text.isNotEmpty()) {
                 // time white
                 val timeWhite = timeEditWhite.text.toString()
@@ -79,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                 updateBlackTimer()
                 btnStart.visibility = View.INVISIBLE
                 btnPause.visibility = View.VISIBLE
+                isRunning = true
             } else {
                 Toast.makeText(this@MainActivity, "Enter time!!!", Toast.LENGTH_SHORT).show()
             }
@@ -86,10 +84,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnPause.setOnClickListener {
-            pauseTimer()
+            if(isRunning) {
+                pauseTimer()
+            } else {
+                continueTimer()
+            }
+
         }
 
-        // todo - disable buttons onCreate
         btnWhite.setOnClickListener {
             startBlack(timeInMilliSecondsBlack)
         }
@@ -98,6 +100,16 @@ class MainActivity : AppCompatActivity() {
             startWhite(timeInMilliSecondsWhite)
         }
 
+    }
+
+    private fun continueTimer() {
+        if(whitePlay) {
+            startWhite(timeInMilliSecondsWhite)
+        } else if(blackPlay) {
+            startBlack(timeInMilliSecondsBlack)
+        }
+        isRunning = true
+        btnPause.text = getString(R.string.pause)
     }
 
     private fun startWhite(timeInMilliSeconds: Long) {
@@ -152,41 +164,40 @@ class MainActivity : AppCompatActivity() {
         val minute = (timeInMilliSecondsBlack / 1000) / 60
         val seconds = (timeInMilliSecondsBlack / 1000) % 60
         if (seconds < 10) {
-            timerBlack.text = "$minute:0$seconds"
+            timerBlack.text = getString(R.string.show_time0, minute, seconds)
         } else {
-            timerBlack.text = "$minute:$seconds"
+            timerBlack.text = getString(R.string.show_time, minute, seconds)
         }
     }
 
     private fun updateWhiteTimer() {
         val minute = (timeInMilliSecondsWhite / 1000) / 60
-        // todo show 00 if seconds = 0
-        // todo show milliseconds
         val seconds = (timeInMilliSecondsWhite / 1000) % 60
         if (seconds < 10) {
-            timerWhite.text = "$minute:0$seconds"
+            timerWhite.text = getString(R.string.show_time0, minute, seconds)
         } else {
-            timerWhite.text = "$minute:$seconds"
+            timerWhite.text = getString(R.string.show_time, minute, seconds)
         }
     }
 
-    // TODO correctly implement this method
-    // + add continue
     private fun pauseTimer() {
+        btnPause.text = getString(R.string.go_on)
         whiteCounter?.cancel()
         blackCounter?.cancel()
 
         isRunning = false
         btnStart.visibility = View.VISIBLE
-        btnPause.visibility = View.INVISIBLE
         btnBlack.visibility = View.INVISIBLE
         btnWhite.visibility = View.INVISIBLE
     }
 
+    // TODO - correctly implements these 2 methods
+    // TODO - check string resources
     override fun onPause() {
         super.onPause()
+        isRunning = false
         whiteCounter?.cancel()
-
+        blackCounter?.cancel()
     }
 
     override fun onResume() {

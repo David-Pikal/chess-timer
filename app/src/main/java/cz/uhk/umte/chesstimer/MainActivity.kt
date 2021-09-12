@@ -190,14 +190,10 @@ class MainActivity : AppCompatActivity() {
         btnBlack.visibility = View.INVISIBLE
         btnWhite.visibility = View.INVISIBLE
     }
-
-    // TODO - correctly implements these 2 methods
-    // TODO - check string resources
+    
     override fun onPause() {
         super.onPause()
-        isRunning = false
-        whiteCounter?.cancel()
-        blackCounter?.cancel()
+        pauseTimer()
     }
 
     override fun onResume() {

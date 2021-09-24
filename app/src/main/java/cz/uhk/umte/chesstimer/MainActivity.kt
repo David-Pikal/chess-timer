@@ -59,11 +59,17 @@ class MainActivity : AppCompatActivity() {
         // start button
         btnStart.setOnClickListener {
             /*
-            if (isRunning) {
-                pauseTimer()
-            } else {
-
+            if(whiteCounter != null || blackCounter != null) {
+                whiteCounter?.cancel()
+                blackCounter?.cancel()
+            }
              */
+
+            if (isRunning) {
+                whiteCounter?.cancel()
+                blackCounter?.cancel()
+            }
+
             if (timeEditBlack.text.isNotEmpty() && timeEditWhite.text.isNotEmpty()) {
                 // time white
                 val timeWhite = timeEditWhite.text.toString()
@@ -122,6 +128,8 @@ class MainActivity : AppCompatActivity() {
             override fun onFinish() {
                 Toast.makeText(this@MainActivity, "Looser!!!", Toast.LENGTH_SHORT).show()
                 blackCounter?.cancel()
+                btnPause.visibility = View.INVISIBLE
+                btnWhite.visibility = View.INVISIBLE
                 updateWhiteTimer()
             }
         }
@@ -147,6 +155,8 @@ class MainActivity : AppCompatActivity() {
             override fun onFinish() {
                 Toast.makeText(this@MainActivity, "Looser!!!", Toast.LENGTH_SHORT).show()
                 whiteCounter?.cancel()
+                btnPause.visibility = View.INVISIBLE
+                btnBlack.visibility = View.INVISIBLE
                 updateBlackTimer()
             }
 
